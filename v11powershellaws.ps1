@@ -19,6 +19,7 @@ $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
 
 
 #Create Veeam User
+Start-Sleep -s 60
 $USERNAME = "veeam"
 $PASSWORD = $DBPass
 
