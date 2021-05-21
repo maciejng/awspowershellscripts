@@ -19,7 +19,7 @@ $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
 
 
 #Create Veeam User
-Start-Sleep -s 60
+Start-Sleep -s 30
 $USERNAME = "veeam"
 $PASSWORD = $DBPass
 
@@ -31,7 +31,7 @@ $existing = $adsi.Children | where {$_.SchemaClassName -eq 'user' -and $_.Name -
 
 if ($existing -eq $null) {
 
-    Write-Host "Creating new local user $USERNAME."
+    Write-Host "Creating new local user $USERNAME with password: $PASSWORD"
     & NET USER $USERNAME $PASSWORD /add /y /expires:never
     
     Write-Host "Adding local user $USERNAME to $group."
@@ -39,7 +39,7 @@ if ($existing -eq $null) {
 
 }
 else {
-    Write-Host "Setting password for existing local user $USERNAME."
+    Write-Host "Setting password: $PASSWORD for existing local user $USERNAME."
     $existing.SetPassword($PASSWORD)
 }
 
