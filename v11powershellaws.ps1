@@ -313,7 +313,7 @@ throw "Setup Failed"
 Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
 (New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
 Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
-Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatch.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
+Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
 #Start-Process -Wait -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe" -ArgumentList "/S" -PassThru -NoNewWindow -RedirectStandardOutput $stdOutLog "$logdir\12_VeeamPatch.txt"
 if (Select-String -path "$logdir\12_VeeamPatch.txt" -pattern "Installation success or error status: 0.") {
 Write-Host " Setup OK" -ForegroundColor Green
