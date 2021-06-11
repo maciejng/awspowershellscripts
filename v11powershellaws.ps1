@@ -315,7 +315,7 @@ Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yel
 Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
 Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
 #Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
-Write-Host " Setup OK" -ForegroundColor Green}
+Write-Host " Setup OK" -ForegroundColor Green
 
 $scriptblock= {
 Connect-VBRServer
