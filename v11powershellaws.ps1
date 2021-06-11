@@ -16,6 +16,10 @@ $GuestOSName = $env:computername
 $url = "https://download2.veeam.com/VBR/v11/VeeamBackup&Replication_11.0.0.837_20210220.iso"
 $output = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackupReplication.iso"
 $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
+$patchurl = "https://download2.veeam.com/VeeamKB/4126/VeeamBackup&Replication_11.0.0.837_20210525.zip"
+$patchoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip"
+#(New-Object System.Net.WebClient).DownloadFile("https://download2.veeam.com/VeeamKB/4126/VeeamBackup&Replication_11.0.0.837_20210525.zip","C:\patch.zip")
+
 
 
 #Create Veeam User
@@ -49,7 +53,7 @@ Write-Host "Ensuring password for $USERNAME never expires."
 #Create install directory
 New-Item -itemtype directory -path $source
 
-#Get VCC iso
+#Get VCC isook
 (New-Object System.Net.WebClient).DownloadFile($url, $output)
 #Write-Output "Time taken: $((Get-Date).Subtract($start_time).Seconds) second(s)"
 
@@ -306,7 +310,14 @@ else {
 throw "Setup Failed"
 }
 
-#$seckey = ConvertTo-SecureString $SecurityKey -AsPlainText -Force
+#Get Veeam Backup and Recovery Patch
+Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
+(New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
+Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
+Start-Process -Wait -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe" -ArgumentList "/S" -PassThru -NoNewWindow -RedirectStandardOutput $stdOutLog "$logdir\12_VeeamPatch.txt"
+if (Select-String -path "$logdir\12_VeeamPatch.txt" -pattern "Installation success or error status: 0.") {
+Write-Host " Setup OK" -ForegroundColor Green
+
 
 $scriptblock= {
 Connect-VBRServer
