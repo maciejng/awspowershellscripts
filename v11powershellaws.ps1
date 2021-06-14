@@ -23,7 +23,7 @@ $patchoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\Veea
 
 #Create Veeam User
 Start-Sleep -s 60
-$USERNAME = "Administrator"
+$USERNAME = "veeam"
 $PASSWORD = $DBPass
 
 
