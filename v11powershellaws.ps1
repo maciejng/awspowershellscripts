@@ -18,12 +18,13 @@ $output = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBack
 $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
 $patchurl = "https://download2.veeam.com/VeeamKB/4126/VeeamBackup&Replication_11.0.0.837_20210525.zip"
 $patchoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip"
+$awscliurl = "https://awscli.amazonaws.com/AWSCLIV2.msi"
 
 
 
 #Create Veeam User
 Start-Sleep -s 60
-$USERNAME = "veeam"
+$USERNAME = "Administrator"
 $PASSWORD = $DBPass
 
 
@@ -308,6 +309,20 @@ Write-Host " Setup OK" -ForegroundColor Green
 else {
 throw "Setup Failed"
 }
+
+Write-Host " Installing AWS CLI ..." -ForegroundColor Yellow
+$MSIArguments = @(
+"/i"
+"$awscliurl"
+"/qn"
+"/L*v"
+"$logdir\12_AWSCLI.txt"
+"ADDLOCAL=BR_SHAREPOINTEXPLORER,PS_SHAREPOINTEXPLORER"
+"ACCEPT_THIRDPARTY_LICENSES=1"
+"ACCEPT_EULA=1"
+)
+Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow
+Write-Host " Setup OK" -ForegroundColor Green
 
 #Get Veeam Backup and Recovery Patch
 Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
