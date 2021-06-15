@@ -340,8 +340,8 @@ Write-Host " Setup OK" -ForegroundColor Green
 aws iam create-user --user-name VeeamDoNotDelete
 aws iam put-user-policy --user-name VeeamDoNotDelete --policy-document file://$policyoutput --policy-name VeeamPolicy
 $keyatt = aws iam create-access-key --user-name VeeamDoNotDelete | ConvertFrom-Json
-$AccessKey1 $keyatt.AccessKey.AccessKeyId
-$SecurityKey1 $keyatt.AccessKey.SecretAccessKey
+$AccessKey1 = $keyatt.AccessKey.AccessKeyId
+$SecurityKey1 = $keyatt.AccessKey.SecretAccessKey
 
 
 $scriptblock= {
