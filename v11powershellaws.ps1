@@ -324,7 +324,7 @@ Write-Host " Setup OK" -ForegroundColor Green
 (New-Object System.Net.WebClient).DownloadFile($policyurl, $policyoutput)
 New-IAMUser -UserName VeeamDoNotDelete
 Write-IAMUserPolicy -UserName "VeeamDoNotDelete" -PolicyName "VeeamPolicy" -PolicyDocument (Get-Content -Raw $policyoutput)
-$keyatt = = New-IAMAccessKey -UserName "VeeamDoNotDelete"
+$keyatt = New-IAMAccessKey -UserName "VeeamDoNotDelete"
 $AccessKey1 = $keyatt.AccessKeyId
 $SecurityKey1 = $keyatt.SecretAccessKey
 
