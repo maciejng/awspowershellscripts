@@ -18,7 +18,8 @@ $output = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBack
 $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
 $patchurl = "https://download2.veeam.com/VeeamKB/4126/VeeamBackup&Replication_11.0.0.837_20210525.zip"
 $patchoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip"
-
+$policyurl = "https://github.com/maciejng/awspowershellscripts/blob/ac39d4b9603cb61054b1a835094fd2a1d120edad/VeeamPolicy.json"
+$policyoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamPolicy.json"
 
 
 #Create Veeam User
@@ -333,10 +334,20 @@ Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plu
 #Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
 Write-Host " Setup OK" -ForegroundColor Green
 
+
+#Create New IAM user for S3 bucket
+(New-Object System.Net.WebClient).DownloadFile($policyurl, $policyoutput)
+aws iam create-user --user-name VeeamDoNotDelete
+aws iam put-user-policy --user-name VeeamDoNotDelete --policy-document file://$policyoutput --policy-name VeeamPolicy
+$keyatt = aws iam create-access-key --user-name VeeamDoNotDelete | ConvertFrom-Json
+$AccessKey1 $keyatt.AccessKey.AccessKeyId
+$SecurityKey1 $keyatt.AccessKey.SecretAccessKey
+
+
 $scriptblock= {
 Connect-VBRServer
-Add-VBRAmazonAccount -AccessKey $Using:AccessKey -SecretKey $Using:SecurityKey
-$account = Get-VBRAmazonAccount -AccessKey $Using:AccessKey
+Add-VBRAmazonAccount -AccessKey $Using:AccessKey1 -SecretKey $Using:SecurityKey1
+$account = Get-VBRAmazonAccount -AccessKey $Using:AccessKey1
 $connect = Connect-VBRAmazonS3Service -Account $account -RegionType Global -ServiceType CapacityTier
 #$region = Get-VBRAmazonS3Region -Connection $connection
 $container = Get-VBRAmazonS3Bucket -Connection $connect -Name $Using:BucketName
