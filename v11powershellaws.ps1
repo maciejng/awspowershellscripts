@@ -18,7 +18,7 @@ $output = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBack
 $source = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension"
 $patchurl = "https://download2.veeam.com/VeeamKB/4126/VeeamBackup&Replication_11.0.0.837_20210525.zip"
 $patchoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip"
-$policyurl = "https://github.com/maciejng/awspowershellscripts/blob/ac39d4b9603cb61054b1a835094fd2a1d120edad/VeeamPolicy.json"
+$policyurl = "https://raw.githubusercontent.com/maciejng/awspowershellscripts/main/VeeamPolicy.json"
 $policyoutput = "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamPolicy.json"
 
 
@@ -310,22 +310,6 @@ else {
 throw "Setup Failed"
 }
 
-Write-Host " Installing AWS CLI ..." -ForegroundColor Yellow
-$MSIArguments = @(
-"/i"
-"https://awscli.amazonaws.com/AWSCLIV2.msi"
-"/qn"
-"/forcerestart"
-"/L*v"
-"$logdir\12_AWSCLI.txt"
-)
-Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow
-if (Select-String -path "$logdir\11_VeeamExplorerForSharePoint.txt" -pattern "Installation success or error status: 0.") {
-Write-Host " Setup OK" -ForegroundColor Green
-}
-else {
-throw "Setup Failed"
-}
 
 #Get Veeam Backup and Recovery Patch
 Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
@@ -338,11 +322,11 @@ Write-Host " Setup OK" -ForegroundColor Green
 
 #Create New IAM user for S3 bucket
 (New-Object System.Net.WebClient).DownloadFile($policyurl, $policyoutput)
-aws iam create-user --user-name VeeamDoNotDelete
-aws iam put-user-policy --user-name VeeamDoNotDelete --policy-document file://$policyoutput --policy-name VeeamPolicy
-$keyatt = aws iam create-access-key --user-name VeeamDoNotDelete | ConvertFrom-Json
-$AccessKey1 = $keyatt.AccessKey.AccessKeyId
-$SecurityKey1 = $keyatt.AccessKey.SecretAccessKey
+New-IAMUser -UserName VeeamDoNotDelete
+Write-IAMUserPolicy -UserName "VeeamDoNotDelete" -PolicyName "VeeamPolicy" -PolicyDocument (Get-Content -Raw $policyoutput)
+$keyatt = = New-IAMAccessKey -UserName "VeeamDoNotDelete"
+$AccessKey1 = $keyatt.AccessKeyId
+$SecurityKey1 = $keyatt.SecretAccessKey
 
 
 $scriptblock= {
