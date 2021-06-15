@@ -315,6 +315,7 @@ $MSIArguments = @(
 "/i"
 "https://awscli.amazonaws.com/AWSCLIV2.msi"
 "/qn"
+"/forcerestart"
 "/L*v"
 "$logdir\12_AWSCLI.txt"
 )
