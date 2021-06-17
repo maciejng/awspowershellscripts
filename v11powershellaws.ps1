@@ -8,9 +8,6 @@ Param(
     [string] $DBPass
  )
 
-$Name = "VeaamServer"
-Rename-Computer -NewName "mn-testaccesskeys15" -Force -Restart
-
 #Variables
 $VMName = $env:computername
 $GuestOSName = $env:computername
