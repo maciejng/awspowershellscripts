@@ -5,8 +5,6 @@
 
 Param(
     [string] $BucketName,
-    [string] $AccessKey,
-    [string] $SecurityKey,
     [string] $DBPass
  )
 
