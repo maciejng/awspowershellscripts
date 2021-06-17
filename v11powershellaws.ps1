@@ -8,6 +8,9 @@ Param(
     [string] $DBPass
  )
 
+$Name = "VeaamServer"
+Rename-Computer -NewName "mn-testaccesskeys15" -Force -Restart
+
 #Variables
 $VMName = $env:computername
 $GuestOSName = $env:computername
@@ -309,13 +312,13 @@ throw "Setup Failed"
 }
 
 
-#Get Veeam Backup and Recovery Patch
-Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
-(New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
-Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
-Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
-#Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
-Write-Host " Setup OK" -ForegroundColor Green
+##Get Veeam Backup and Recovery Patch
+#Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
+#(New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
+#Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
+#Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
+##Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
+#Write-Host " Setup OK" -ForegroundColor Green
 
 
 #Create New IAM user for S3 bucket
