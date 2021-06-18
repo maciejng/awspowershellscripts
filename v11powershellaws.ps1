@@ -5,8 +5,10 @@
 
 Param(
     [string] $BucketName,
+    [string] $VeeamUserName,    
     [string] $DBPass
  )
+
 
 #Variables
 $VMName = $env:computername
@@ -309,26 +311,26 @@ throw "Setup Failed"
 }
 
 
-##Get Veeam Backup and Recovery Patch
-#Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
-#(New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
-#Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
-#Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
-##Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
-#Write-Host " Setup OK" -ForegroundColor Green
+#Get Veeam Backup and Recovery Patch
+Write-Host " Installing Veeam Backup and Restore Patch ..." -ForegroundColor Yellow
+(New-Object System.Net.WebClient).DownloadFile($patchurl, $patchoutput)
+Expand-Archive C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBRPatch.zip -DestinationPath C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\ -Force
+Start-Process -Wait -ArgumentList "/silent" -PassThru -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
+#Start-Process -Wait -ArgumentList "/silent" -PassThru -RedirectStandardOutput "$logdir\12_VeeamPatch.txt" -RedirectStandardError "$logdir\12_VeeamPatchErrors.txt" -FilePath "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\VeeamBackup&Replication_11.0.0.837_20210525.exe"
+Write-Host " Setup OK" -ForegroundColor Green
 
 
 #Create New IAM user for S3 bucket
 (New-Object System.Net.WebClient).DownloadFile($policyurl, $policyoutput)
-$keyatt = New-IAMAccessKey -UserName "VeeamDoNotDelete"
-$AccessKey1 = $keyatt.AccessKeyId
-$SecurityKey1 = $keyatt.SecretAccessKey
+$keyatt = New-IAMAccessKey -UserName $VeeamUserName
+$AccessKey = $keyatt.AccessKeyId
+$SecurityKey = $keyatt.SecretAccessKey
 
 
 $scriptblock= {
 Connect-VBRServer
-Add-VBRAmazonAccount -AccessKey $Using:AccessKey1 -SecretKey $Using:SecurityKey1
-$account = Get-VBRAmazonAccount -AccessKey $Using:AccessKey1
+Add-VBRAmazonAccount -AccessKey $Using:AccessKey -SecretKey $Using:SecurityKey
+$account = Get-VBRAmazonAccount -AccessKey $Using:AccessKey
 $connect = Connect-VBRAmazonS3Service -Account $account -RegionType Global -ServiceType CapacityTier
 #$region = Get-VBRAmazonS3Region -Connection $connection
 $container = Get-VBRAmazonS3Bucket -Connection $connect -Name $Using:BucketName
